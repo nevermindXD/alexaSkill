@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src --out-dir dist",
+    "build": "babel src --out-dir dist && npm run build-static",
     "serv": "node dist/server.js",
     "start": "nodemon --exec babel-node src/server.js",
     "build-static": "node copyStaticAssets.ts"
@@ -15,14 +15,16 @@
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
-    "@babel/node": "^7.2.0",
+    "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
+    "@babel/register": "^7.0.0",
     "nodemon": "^1.18.8"
   },
   "dependencies": {
     "ask-sdk": "^2.3.0",
     "babel": "^6.23.0",
     "babel-cli": "^6.26.0",
+    "babel-core": "^7.0.0-bridge.0",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
     "cookie-session": "^2.0.0-beta.3",
