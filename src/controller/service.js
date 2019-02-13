@@ -85,3 +85,28 @@ export const updateOne = (id, newInfo) => {
 
 
 };
+
+export const dayAvailable = (When ,Schedule) => {
+    let query = { When, Schedule, Complete: false  };
+    return Service.find(query)
+		.then(serviceList => {
+            if(serviceList.length >= 4){
+                return true;
+            }else{
+                return false;
+            }
+		}).catch(() => {
+			return 'Something went wrong';
+		});
+}
+
+export const getAllServiceDesc = (When, Schedule, Client) => {
+	let query = {When, Schedule, Client, Complete: false};
+	return Service.find(query).sort('-date')
+		.then(serviceList => {
+			serviceList.reverse();
+			return serviceList;
+		}).catch(() => {
+			return 'Something went wrong';
+		});
+};
