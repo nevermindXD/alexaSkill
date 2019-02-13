@@ -1,11 +1,11 @@
 import { Service } from '../models';
+// import { Calendar } from './calendar';
 
 export const listAll = () => {
     return Service
         .find().then(services => {
             return services;
-        }).catch( err => {
-            console.debug(err);
+        }).catch(() => {
             return 'Something went wrong';
         });
 };
@@ -20,11 +20,13 @@ export const getOne = (id) => {
 };
 
 export const addOne = (service) => {
+    const {When, Schedule} = service;
     var newService = new Service(service);
-
-    return newService
+    newService.DateService = new Date(info.dateA).toISOString();
+    if(dayAvailable(When,Schedule)){
+        return newService
         .save()
-        .then(service => {
+        .then(service => {    
             return service;
         })
         .catch(err => {
@@ -32,10 +34,11 @@ export const addOne = (service) => {
                 message: 'Something went wrong',
                 error: err.message
             };
-
             return response;
         });
-
+    }else{
+        return 'Servicio no disponible para ese dia'
+    }
 };
 
 export const deleteOne = (id) => {
@@ -63,12 +66,10 @@ export const deleteOne = (id) => {
             };
             return response;
         });
-
 };
 
 
 export const updateOne = (id, newInfo) => {
-
     let byId = { _id: id };
     let query = { $set: newInfo };
     return Service.update(byId, query)
@@ -82,15 +83,13 @@ export const updateOne = (id, newInfo) => {
             };
             return response;
         });
-
-
 };
 
 export const dayAvailable = (When ,Schedule) => {
     let query = { When, Schedule, Complete: false  };
     return Service.find(query)
 		.then(serviceList => {
-            if(serviceList.length >= 4){
+            if(serviceList.length >= 2){
                 return true;
             }else{
                 return false;
@@ -98,7 +97,7 @@ export const dayAvailable = (When ,Schedule) => {
 		}).catch(() => {
 			return 'Something went wrong';
 		});
-}
+};
 
 export const getAllServiceDesc = (When, Schedule, Client) => {
 	let query = {When, Schedule, Client, Complete: false};
@@ -109,4 +108,14 @@ export const getAllServiceDesc = (When, Schedule, Client) => {
 		}).catch(() => {
 			return 'Something went wrong';
 		});
+};
+
+export const getAllServicesClient = (Client) => {
+    let query = {Client};
+    return Service.find(query)
+    .then(serviceList => {
+        return serviceList;
+    }).catch(() => {
+        return 'Something went wrong';
+    });
 };
