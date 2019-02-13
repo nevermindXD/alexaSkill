@@ -19,6 +19,18 @@ export const getOne = (id) => {
         });
 };
 
+export const getOneMail = (Mail) => {
+    let query = {Mail};
+    return Client
+        .find(query).then(client => {
+            return client;
+        }).catch( err => {
+            console.debug(err);
+            return 'Something went wrong';
+        });
+    
+};
+
 export const addOne = (client) => {
     var newClient = new Client(client);
 
@@ -82,6 +94,4 @@ export const updateOne = (id, newInfo) => {
             };
             return response;
         });
-
-
 };

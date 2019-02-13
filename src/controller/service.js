@@ -18,27 +18,36 @@ export const getOne = (id) => {
             return 'Something went wrong';
         });
 };
-
+/**
+ * Missing check the client can have 2 services in one day
+ */
 export const addOne = (service) => {
     const {When, Schedule} = service;
     var newService = new Service(service);
-    newService.DateService = new Date(info.dateA).toISOString();
-    if(dayAvailable(When,Schedule)){
-        return newService
-        .save()
-        .then(service => {    
-            return service;
-        })
-        .catch(err => {
-            let response = {
-                message: 'Something went wrong',
-                error: err.message
-            };
-            return response;
-        });
-    }else{
-        return 'Servicio no disponible para ese dia'
-    }
+    newService.DateService = new Date(service.When).toISOString();
+
+    let query = { When, Schedule, Complete: false  };
+    return Service.find(query)
+		.then(serviceList => {
+            if(serviceList.length < 1){
+                return newService
+                .save()
+                .then(service => {    
+                    return service;
+                })
+                .catch(err => {
+                    let response = {
+                        message: 'Something went wrong',
+                        error: err.message
+                    };
+                    return response;
+                });
+            }else{
+                return 'Servicio no disponible para ese dia';
+            }
+		}).catch(() => {
+			return 'Something went wrong';
+		});        
 };
 
 export const deleteOne = (id) => {
@@ -89,23 +98,25 @@ export const dayAvailable = (When ,Schedule) => {
     let query = { When, Schedule, Complete: false  };
     return Service.find(query)
 		.then(serviceList => {
-            if(serviceList.length >= 2){
-                return true;
-            }else{
+            if(serviceList.length >= 1){
+                console.log('no mas')
                 return false;
+            }else{
+                return true;
             }
 		}).catch(() => {
 			return 'Something went wrong';
 		});
 };
 
-export const getAllServiceDesc = (When, Schedule, Client) => {
-	let query = {When, Schedule, Client, Complete: false};
+export const getAllServiceDesc = (Client) => {
+    let query = {Client, Complete: false};
 	return Service.find(query).sort('-date')
 		.then(serviceList => {
-			serviceList.reverse();
+			// serviceList.reverse();
 			return serviceList;
-		}).catch(() => {
+		}).catch(e => {
+            console.log(e);
 			return 'Something went wrong';
 		});
 };

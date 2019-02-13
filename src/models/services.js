@@ -15,7 +15,8 @@ const ServiceSchema = new Schema ({
 		ref: 'Client'
     },
     Complete:{
-        type: Boolean
+        type: Boolean,
+        default: false
     },
 	CreationDate: {
 		type: Date,

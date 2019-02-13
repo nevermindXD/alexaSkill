@@ -26,8 +26,8 @@ app.group('/clients', (router) => {
     })
     .delete('/', (req,res) => {
         clientCtrl.deleteOne(req.body.id)
-        .then( client => {
-            res.status(200).json(client);
+        .then( () => {
+            res.status(200).json({message: 'Eliminado correctamente'});
         })
         .catch(err => {
 			res.status(200).send(err);
@@ -41,7 +41,23 @@ app.group('/clients', (router) => {
         .catch(err => {
 			res.status(200).send(err);
 		});
-    });
+    })
+    .get('/services/last/:mail', (req,res) => {
+        clientCtrl.getOneMail(req.params.mail)
+        .then( client => {
+            servieCtrl.getAllServiceDesc(client[0]._id)
+                .then( serviceList => {
+                    res.status(200).json(serviceList);
+                })
+                .catch(err => {
+                    res.status(200).send(err);
+                });
+        })
+        .catch(err => {
+			res.status(200).send(err);
+		});
+        
+    })
 });
 
 export default app;
