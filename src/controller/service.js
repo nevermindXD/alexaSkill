@@ -1,4 +1,4 @@
-import { Service } from '../models';
+import { Service, Client } from '../models';
 // import { Calendar } from './calendar';
 
 export const listAll = () => {
@@ -25,28 +25,38 @@ export const addOne = (service) => {
     const {When, Schedule} = service;
     var newService = new Service(service);
     newService.DateService = new Date(service.When).toISOString();
-
     let query = { When, Schedule, Complete: false  };
     return Service.find(query)
 		.then(serviceList => {
-            if(serviceList.length < 1){
-                return newService
-                .save()
-                .then(service => {    
-                    return service;
-                })
-                .catch(err => {
-                    let response = {
-                        message: 'Something went wrong',
-                        error: err.message
-                    };
-                    return response;
-                });
-            }else{
-                return 'Servicio no disponible para ese dia';
-            }
+            return Client.find({Mail: service.Mail})
+            .then( client => { 
+                if(serviceList.length < 1){
+                    client[0].Service.push(newService._id);
+                    client[0].save(err=>{
+						if(err){
+							return err;
+						}
+					});
+                    return newService
+                    .save()
+                    .then(service => {    
+                        return service;
+                    })
+                    .catch(err => {
+                        let response = {
+                            message: 'Something went wrong',
+                            error: err.message
+                        };
+                        return response;
+                    });
+                }else{
+                    return 'Servicio no disponible para ese dia';
+                }
+            }).catch(() => {
+                return 'Something went wrong Client';
+            });   
 		}).catch(() => {
-			return 'Something went wrong';
+			return 'Something went wrong Service';
 		});        
 };
 
@@ -113,10 +123,9 @@ export const getAllServiceDesc = (Client) => {
     let query = {Client, Complete: false};
 	return Service.find(query).sort('-date')
 		.then(serviceList => {
-			// serviceList.reverse();
-			return serviceList;
-		}).catch(e => {
-            console.log(e);
+			serviceList.reverse();
+			return serviceList[0];
+		}).catch(() => {
 			return 'Something went wrong';
 		});
 };

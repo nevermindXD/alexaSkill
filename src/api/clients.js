@@ -15,6 +15,7 @@ app.group('/clients', (router) => {
 			res.status(200).send(err);
 		});
     })
+    
     .post('/', (req,res) => {
         clientCtrl.addOne(req.body)
         .then( client => {
@@ -24,6 +25,7 @@ app.group('/clients', (router) => {
 			res.status(200).send(err);
 		});
     })
+
     .delete('/', (req,res) => {
         clientCtrl.deleteOne(req.body.id)
         .then( () => {
@@ -33,31 +35,76 @@ app.group('/clients', (router) => {
 			res.status(200).send(err);
 		});
     })
+
     .post('/services', (req,res) => {
-        servieCtrl.addOne(req.body)
-        .then( service => {
-            res.status(200).json(service);
-        })
-        .catch(err => {
-			res.status(200).send(err);
-		});
-    })
-    .get('/services/last/:mail', (req,res) => {
-        clientCtrl.getOneMail(req.params.mail)
+        clientCtrl.getOneMail(req.body.Mail)
         .then( client => {
-            servieCtrl.getAllServiceDesc(client[0]._id)
-                .then( serviceList => {
-                    res.status(200).json(serviceList);
+            if(client.length === 0){
+                res.status(200).json({Message:"Usuario no registrado"});
+            }else{
+                req.body.Client = client[0]._id
+                servieCtrl.addOne(req.body)
+                .then( service => {
+                    let date = service.When.getFullYear() + '-' + service.When.getMonth() + '-' + service.When.getDate();
+                    res.status(200).json({message: 'Tu proximo servicio esta agendado para el ' + date + ' por la ' + service.Schedule});
                 })
                 .catch(err => {
                     res.status(200).send(err);
                 });
+            }
         })
         .catch(err => {
 			res.status(200).send(err);
 		});
-        
+
     })
+
+    .get('/services/next/:mail', (req,res) => {
+        clientCtrl.getOneMail(req.params.mail)
+        .then( client => {
+            if(client.length === 0){
+                res.status(200).json({Message:"Usuario no registrado"});
+            }else{
+                servieCtrl.getAllServiceDesc(client[0]._id)
+                    .then( service => {
+                        let date = service.When.getFullYear() + '-' + service.When.getMonth() + '-' + service.When.getDate();
+                        res.status(200).json({message: 'Tu proximo servicio es el ' + date + ' por la ' + service.Schedule});
+                    })
+                    .catch(err => {
+                        res.status(200).send(err);
+                    });
+            }
+        })
+        .catch(err => {
+			res.status(200).send(err);
+		});  
+    })
+
+    .delete('/services/next/:mail', (req,res) => {
+        clientCtrl.getOneMail(req.params.mail)
+        .then( client => {
+            if(client.length === 0){
+                res.status(200).json({Message:"Usuario no registrado"});
+            }else{
+                servieCtrl.getAllServiceDesc(client[0]._id)
+                    .then( service => {
+                        servieCtrl.deleteOne(service._id)
+                        .then(() => {
+                            res.status(200).json({message: 'Tu proximo servicio a sido cancelado'});
+                        })
+                        .catch(err => {
+                            res.status(200).send(err);
+                        });
+                    })
+                    .catch(err => {
+                        res.status(200).send(err);
+                    });
+            }
+        })
+        .catch(err => {
+			res.status(200).send(err);
+		});  
+    });
 });
 
 export default app;
