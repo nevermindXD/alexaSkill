@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/babel src --out-dir dist && npm run build-static",
+    "build": "babel src --out-dir dist && npm run build-static",
     "serv": "node dist/server.js",
-    "start": "./node_modules/.bin/nodemon --exec ./node_modules/.bin/babel-node src/server.js",
+    "start": "nodemon --exec babel-node src/server.js",
     "build-static": "node copyStaticAssets.js"
   },
   "author": "Juan Carlos Olivier Jasso (nevermindXD)",
