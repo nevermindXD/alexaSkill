@@ -48,8 +48,8 @@ app.group('/clients', (router) => {
                     let date = service.When.getFullYear() + '-' + service.When.getMonth() + '-' + service.When.getDate();
                     res.status(200).json({message: 'Tu proximo servicio esta agendado para el ' + date + ' por la ' + service.Schedule});
                 })
-                .catch(err => {
-                    res.status(200).send(err);
+                .catch(() => {
+                    res.status(200).json({Message:"Ocurrio un problema intentalo mas tarde"});
                 });
             }
         })

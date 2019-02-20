@@ -6,7 +6,7 @@ export const listAll = () => {
         .find().then(services => {
             return services;
         }).catch(() => {
-            return 'Something went wrong';
+            return 'Ups!, algo salio mal, vuelve a intentrlo';
         });
 };
 
@@ -15,7 +15,7 @@ export const getOne = (id) => {
         .then(service => {
             return service;
         }).catch(() => {
-            return 'Something went wrong';
+            return 'Ups!, algo salio mal, vuelve a intentrlo';
         });
 };
 /**
@@ -44,7 +44,7 @@ export const addOne = (service) => {
                     })
                     .catch(err => {
                         let response = {
-                            message: 'Something went wrong',
+                            message: 'Ups!, algo salio mal, vuelve a intentrlo',
                             error: err.message
                         };
                         return response;
@@ -53,10 +53,10 @@ export const addOne = (service) => {
                     return 'Servicio no disponible para ese dia';
                 }
             }).catch(() => {
-                return 'Something went wrong Client';
+                return 'Ups!, algo salio mal, vuelve a intentrlo Client';
             });   
 		}).catch(() => {
-			return 'Something went wrong Service';
+			return 'Ups!, algo salio mal, vuelve a intentrlo Service';
 		});        
 };
 
@@ -65,7 +65,7 @@ export const deleteOne = (id) => {
         .then(service => {
             if (service === null) {
                 let response = {
-                    message: 'Something went wrong ',
+                    message: 'Ups!, algo salio mal, vuelve a intentrlo ',
                     error: 'id ' + id + ' doesnt exist'
                 };
                 return response;
@@ -76,11 +76,11 @@ export const deleteOne = (id) => {
                         return service;
                     })
                     .catch(() => {
-                        return 'Something went wrong';
+                        return 'Ups!, algo salio mal, vuelve a intentrlo';
                     });
         }).catch(() => {
             let response = {
-                message: 'Something went wrong ',
+                message: 'Ups!, algo salio mal, vuelve a intentrlo ',
                 error: 'id ' + id + ' doesnt exist'
             };
             return response;
@@ -109,13 +109,12 @@ export const dayAvailable = (When ,Schedule) => {
     return Service.find(query)
 		.then(serviceList => {
             if(serviceList.length >= 1){
-                console.log('no mas')
                 return false;
             }else{
                 return true;
             }
 		}).catch(() => {
-			return 'Something went wrong';
+			return 'Ups!, algo salio mal, vuelve a intentrlo';
 		});
 };
 
@@ -123,10 +122,15 @@ export const getAllServiceDesc = (Client) => {
     let query = {Client, Complete: false};
 	return Service.find(query).sort('-date')
 		.then(serviceList => {
-			serviceList.reverse();
-			return serviceList[0];
+            serviceList.reverse();
+            if(serviceList.length === 0){
+                return 'No tienes ningun servicio proximo agendado';
+            }else{
+                let date = serviceList[0].When.getFullYear() + '-' + serviceList[0].When.getMonth() + '-' + serviceList[0].When.getDate();
+                return 'Servicio agendado para el ' + date + ' por la ' + serviceList[0].Schedule + ', Pronto nos pondremos en contacto para establecer algunos detalles';
+            }
 		}).catch(() => {
-			return 'Something went wrong';
+			return 'Ups!, algo salio mal, vuelve a intentrlo';
 		});
 };
 
@@ -136,6 +140,6 @@ export const getAllServicesClient = (Client) => {
     .then(serviceList => {
         return serviceList;
     }).catch(() => {
-        return 'Something went wrong';
+        return 'Ups!, algo salio mal, vuelve a intentrlo';
     });
 };
