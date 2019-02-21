@@ -50,7 +50,11 @@ export const addOne = (service) => {
                         return response;
                     });
                 }else{
-                    return 'Servicio no disponible para ese dia';
+                    let response = {
+                        message: 'Servicio no disponible para ese dia',
+                        error: err.message
+                    };
+                    return response
                 }
             }).catch(() => {
                 return 'Ups!, algo salio mal, vuelve a intentrlo Client';
@@ -65,23 +69,27 @@ export const deleteOne = (id) => {
         .then(service => {
             if (service === null) {
                 let response = {
-                    message: 'Ups!, algo salio mal, vuelve a intentrlo ',
-                    error: 'id ' + id + ' doesnt exist'
+                    message: 'No tienes ningún servicio agendado'
                 };
                 return response;
-            }
-            else
+            } else {
                 service.remove()
-                    .then(service => {
-                        return service;
+                    .then(() => {
+                        let response = {
+                            message: 'Tu próximo servicio a sido cancelado'
+                        };
+                        return response;
                     })
                     .catch(() => {
-                        return 'Ups!, algo salio mal, vuelve a intentrlo';
+                        let response = {
+                            message: 'Ups!, algo salio mal, vuelve a intentrlo'
+                        };
+                        return response;
                     });
+            }
         }).catch(() => {
             let response = {
-                message: 'Ups!, algo salio mal, vuelve a intentrlo ',
-                error: 'id ' + id + ' doesnt exist'
+                message: 'No tienes ningún servicio agendado'
             };
             return response;
         });
@@ -118,13 +126,13 @@ export const dayAvailable = (When ,Schedule) => {
 		});
 };
 
-export const getAllServiceDesc = (Client) => {
+export const getNextServiceDesc = (Client) => {
     let query = {Client, Complete: false};
 	return Service.find(query).sort('-date')
 		.then(serviceList => {
             serviceList.reverse();
             if(serviceList.length === 0){
-                return 'No tienes ningun servicio proximo agendado';
+                return 'No tienes ningún servicio próximo agendado';
             }else{
                 let date = serviceList[0].When.getFullYear() + '-' + serviceList[0].When.getMonth() + '-' + serviceList[0].When.getDate();
                 return 'Servicio agendado para el ' + date + ' por la ' + serviceList[0].Schedule + ', Pronto nos pondremos en contacto para establecer algunos detalles';

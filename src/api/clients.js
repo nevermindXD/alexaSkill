@@ -45,11 +45,15 @@ app.group('/clients', (router) => {
                 req.body.Client = client[0]._id
                 servieCtrl.addOne(req.body)
                 .then( service => {
-                    let date = service.When.getFullYear() + '-' + service.When.getMonth() + '-' + service.When.getDate();
-                    res.status(200).json({message: 'Tu proximo servicio esta agendado para el ' + date + ' por la ' + service.Schedule});
+                    if(service.message){
+                        res.status(200).json({message: service.message});
+                    }else{
+                        let date = service.When.getFullYear() + '-' + service.When.getMonth() + '-' + service.When.getDate();
+                        res.status(200).json({message: 'Tu próximo servicio está agendado para el ' + date + ' por la ' + service.Schedule});
+                    }
                 })
                 .catch(() => {
-                    res.status(200).json({Message:"Ocurrio un problema intentalo mas tarde"});
+                    res.status(200).json({Message:"Ocurrio un problema intentalo más tarde"});
                 });
             }
         })
@@ -65,10 +69,9 @@ app.group('/clients', (router) => {
             if(client.length === 0){
                 res.status(200).json({Message:"Usuario no registrado"});
             }else{
-                servieCtrl.getAllServiceDesc(client[0]._id)
+                servieCtrl.getNextServiceDesc(client[0]._id)
                     .then( service => {
-                        let date = service.When.getFullYear() + '-' + service.When.getMonth() + '-' + service.When.getDate();
-                        res.status(200).json({message: 'Tu proximo servicio es el ' + date + ' por la ' + service.Schedule});
+                        res.status(200).json({message: service});
                     })
                     .catch(err => {
                         res.status(200).send(err);
@@ -86,11 +89,11 @@ app.group('/clients', (router) => {
             if(client.length === 0){
                 res.status(200).json({Message:"Usuario no registrado"});
             }else{
-                servieCtrl.getAllServiceDesc(client[0]._id)
+                servieCtrl.getNextServiceDesc(client[0]._id)
                     .then( service => {
                         servieCtrl.deleteOne(service._id)
-                        .then(() => {
-                            res.status(200).json({message: 'Tu proximo servicio a sido cancelado'});
+                        .then( service => {
+                            res.status(200).json({message: service.message});
                         })
                         .catch(err => {
                             res.status(200).send(err);
