@@ -40,7 +40,7 @@ app.group('/clients', (router) => {
         clientCtrl.getOneMail(req.body.Mail)
         .then( client => {
             if(client.length === 0){
-                res.status(200).json({Message:"Usuario no registrado"});
+                res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
             }else{
                 req.body.Client = client[0]._id
                 servieCtrl.addOne(req.body)
@@ -67,7 +67,7 @@ app.group('/clients', (router) => {
         clientCtrl.getOneMail(req.params.mail)
         .then( client => {
             if(client.length === 0){
-                res.status(200).json({Message:"Usuario no registrado"});
+                res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
             }else{
                 servieCtrl.getNextServiceDesc(client[0]._id)
                     .then( service => {
@@ -87,7 +87,7 @@ app.group('/clients', (router) => {
         clientCtrl.getOneMail(req.params.mail)
         .then( client => {
             if(client.length === 0){
-                res.status(200).json({Message:"Usuario no registrado"});
+                res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
             }else{
                 servieCtrl.getNextServiceDesc(client[0]._id)
                     .then( service => {
