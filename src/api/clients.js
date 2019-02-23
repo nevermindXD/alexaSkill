@@ -1,4 +1,5 @@
 import express from 'express';
+import https from "https";
 import * as clientCtrl from '../controller/client';
 import * as servieCtrl from '../controller/service';
 
@@ -81,6 +82,40 @@ app.group('/clients', (router) => {
         .catch(err => {
 			res.status(200).send(err);
 		});  
+    })
+
+
+    .get('/test', (req,res) => {
+        var options = {
+            host: 'teadsdf.herokuapp.com/',
+            path: '/api/v1/clients/services/',
+            method: 'POST',
+            headers: {'Content-Type' : 'application/json'},
+            body: {
+                When :'Mañana',
+                Schedule :"03-30-2019",
+                Mail: 'juanc.olivierj@gmail.com'
+            }
+        };
+
+        const request = https.request(options, (response) => {
+            response.setEncoding('utf8');
+            let returnData = '';
+            response.on('data', (chunk) => {
+                returnData += chunk;
+            });
+    
+            response.on('end', () => {
+              console.log(returnData);
+              res.status(200).json(returnData);
+            // resolve(JSON.parse(returnData));
+            });
+    
+            response.on('error', (error) => {
+                console.log(error);
+            });
+        });
+        request.end();
     })
 
     .delete('/services/next/:mail', (req,res) => {
