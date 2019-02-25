@@ -79,9 +79,11 @@ app.group('/clients', (router) => {
             if(client.length === 0){
                 res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
             }else{
+                console.log('existe',client.length)
                 serviceInfo.Client = client[0]._id
                 servieCtrl.addOne(serviceInfo)
                 .then( service => {
+                    console.log('service',service)
                     if(service.message){
                         res.status(200).json({message: service.message});
                     }else{
