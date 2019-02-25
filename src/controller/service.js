@@ -53,7 +53,7 @@ export const addOne = (service) => {
                         });
                     }else{
                         let response = {
-                            message: 'Ya tienes un servicio agendado para ese dia',
+                            message: 'Ya tienes un servicio agendado para ese día',
                         };
                         return response
                     }
@@ -65,7 +65,7 @@ export const addOne = (service) => {
 
             }else{
                 let response = {
-                    message: 'Servicio no disponible para ese dia',
+                    message: 'Servicio no disponible para ese día',
                     error: err.message
                 };
                 return response
