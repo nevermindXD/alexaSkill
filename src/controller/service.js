@@ -142,6 +142,23 @@ export const getNextServiceDesc = (Client) => {
 		});
 };
 
+export const getLastServiceDesc = (Client) => {
+    let query = {Client, Complete: true};
+	return Service.find(query).sort('-date')
+		.then(serviceList => {
+            serviceList.reverse();
+            if(serviceList.length === 0){
+                return 'No tienes ningún servicio próximo agendado';
+            }else{
+                let date = serviceList[0].When.getFullYear() + '-' + serviceList[0].When.getMonth() + '-' + serviceList[0].When.getDate();
+                return 'Tu último servicio fue el ' + date + ' por la ' + serviceList[0].Schedule + '.';
+            }
+		}).catch(() => {
+			return 'Ups!, algo salio mal, vuelve a intentrlo';
+		});
+};
+
+
 export const getAllServicesClient = (Client) => {
     let query = {Client};
     return Service.find(query)
