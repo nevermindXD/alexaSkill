@@ -22,46 +22,56 @@ export const getOne = (id) => {
  * Missing check the client can have 2 services in one day
  */
 export const addOne = (service) => {
-    const {When, Schedule} = service;
+    const {When, Schedule ,ClientID} = service;
     var newService = new Service(service);
     newService.DateService = new Date(service.When).toISOString();
     let query = { When, Schedule, Complete: false  };
     return Service.find(query)
 		.then(serviceList => {
-            return Client.find({Mail: service.Mail})
-            .then( client => { 
-                if(serviceList.length < 1){
-                    client[0].Service.push(newService._id);
-                    client[0].save(err=>{
-						if(err){
-							return err;
-						}
-					});
-                    return newService
-                    .save()
-                    .then(service => {    
-                        return service;
-                    })
-                    .catch(err => {
-                        console.log(err);
+            if(serviceList.length <2){
+                return Client.findById(ClientID)
+                .then( client => { 
+                    if(serviceList.length < 1){
+                        client.Service.push(newService._id);
+                        newService.Client = client._id; 
+                        client.save(err=>{
+                            if(err){
+                                return err;
+                            }
+                        });
+                        return newService
+                        .save()
+                        .then(service => {    
+                            return service;
+                        })
+                        .catch(err => {
+                            let response = {
+                                message: 'Ups!, algo salio mal, vuelve a intentrlo',
+                                error: err.message
+                            };
+                            return response;
+                        });
+                    }else{
                         let response = {
-                            message: 'Ups!, algo salio mal, vuelve a intentrlo',
-                            error: err.message
+                            message: 'Ya tienes un servicio agendado para ese dia',
                         };
-                        return response;
-                    });
-                }else{
+                        return response
+                    }
+                }).catch( err  => {
                     console.log(err);
-                    let response = {
-                        message: 'Servicio no disponible para ese dia',
-                        error: err.message
-                    };
-                    return response
-                }
-            }).catch(() => {
-                return 'Ups!, algo salio mal, vuelve a intentrlo Client';
-            });   
-		}).catch(() => {
+                    return 'Ups!, algo salio mal, vuelve a intentrlo Client';
+                }); 
+                
+
+            }else{
+                let response = {
+                    message: 'Servicio no disponible para ese dia',
+                    error: err.message
+                };
+                return response
+            }
+		}).catch( err => {
+            console.log(err);
 			return 'Ups!, algo salio mal, vuelve a intentrlo Service';
 		});        
 };
@@ -77,19 +87,22 @@ export const deleteOne = (id) => {
             } else {
                 service.remove()
                     .then(() => {
+                        console.log('delete',service)
                         let response = {
                             message: 'Tu próximo servicio a sido cancelado'
                         };
-                        return response;
+                        return 'Tu próximo servicio a sido cancelado';
                     })
-                    .catch(() => {
+                    .catch( err  => {
+                        console.log(err);
                         let response = {
                             message: 'Ups!, algo salio mal, vuelve a intentrlo'
                         };
                         return response;
                     });
             }
-        }).catch(() => {
+        }).catch( err => {
+            console.log(err);
             let response = {
                 message: 'No tienes ningún servicio agendado'
             };
@@ -128,16 +141,32 @@ export const dayAvailable = (When ,Schedule) => {
 		});
 };
 
-export const getNextServiceDesc = (Client) => {
+export const getNextServiceDeleteDesc = (Client) => {
     let query = {Client, Complete: false};
 	return Service.find(query).sort('-date')
 		.then(serviceList => {
             serviceList.reverse();
-            if(serviceList.length === 0){
-                return 'No tienes ningún servicio próximo agendado';
+            if(serviceList.length !== 0){
+                return serviceList[0]
             }else{
-                let date = serviceList[0].When.getFullYear() + '-' + serviceList[0].When.getMonth() + '-' + serviceList[0].When.getDate();
-                return 'Servicio agendado para el ' + date + ' por la ' + serviceList[0].Schedule + ', Pronto nos pondremos en contacto para establecer algunos detalles';
+                return 'No tienes ningún servicio próximo agendado';
+            }
+		}).catch(() => {
+			return 'Ups!, algo salio mal, vuelve a intentrlo';
+		});
+};
+
+export const getNextServiceDesc = (Client) => {
+    let query = {Client, Complete: false};
+	return Service.find(query).sort('-date')
+		.then(serviceList => {
+            console.log(serviceList)
+            serviceList.reverse();
+            if(serviceList.length !== 0){
+                let date = serviceList[0].When.toISOString();
+                return 'Servicio agendado para el ' + date.substr(0, 10) + ' por la ' + serviceList[0].Schedule + ', Pronto nos pondremos en contacto para establecer algunos detalles';
+            }else{
+                return 'No tienes ningún servicio próximo agendado';
             }
 		}).catch(() => {
 			return 'Ups!, algo salio mal, vuelve a intentrlo';

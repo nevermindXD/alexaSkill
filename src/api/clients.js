@@ -73,22 +73,18 @@ app.group('/clients', (router) => {
             When,
             Schedule
         };
-        console.log(serviceInfo);
         clientCtrl.getOneMail(Mail)
         .then( client => {
             if(client.length === 0){
                 res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
             }else{
-                console.log('existe',client.length)
-                serviceInfo.Client = client[0]._id
+                serviceInfo.ClientID = client[0]._id
                 servieCtrl.addOne(serviceInfo)
                 .then( service => {
-                    console.log('service',service)
                     if(service.message){
                         res.status(200).json({message: service.message});
                     }else{
-                        let date = service.When.getFullYear() + '-' + service.When.getMonth() + '-' + service.When.getDate();
-                        res.status(200).json({message: 'Tu próximo servicio está agendado para el ' + date + ' por la ' + service.Schedule});
+                        res.status(200).json({message: 'Tu próximo servicio está agendado para el ' + When + ' por la ' + service.Schedule});
                     }
                 })
                 .catch(() => {
@@ -106,14 +102,49 @@ app.group('/clients', (router) => {
     .get('/services/alexa/next/:mail', (req,res) => {
         clientCtrl.getOneMail(req.params.mail)
         .then( client => {
-            if(client.length === 0){
-                res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
-            }else{
+            if(client.length !== 0){
                 servieCtrl.getNextServiceDesc(client[0]._id)
                     .then( service => {
                         res.status(200).json({message: service});
                     })
                     .catch(err => {
+                        res.status(200).send(err);
+                    });
+            }else{
+                res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
+            }
+        })
+        .catch(err => {
+			res.status(200).send(err);
+		});  
+    })
+    /**
+     * eliminar siguiente servicio
+     */
+    .get('/services/alexa/deletenext/:mail', (req,res) => {
+        clientCtrl.getOneMail(req.params.mail)
+        .then( client => {
+            if(client.length === 0){
+                res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
+            }else{
+                servieCtrl.getNextServiceDeleteDesc(client[0]._id)
+                    .then( service => {
+                        servieCtrl.deleteOne(service._id)
+                        .then( serviceDEl => {
+                            if(serviceDEl === undefined){
+                                res.status(200).json({message: 'Tu próximo servicio a sido cancelado'}); 
+                            }
+                            if(serviceDEl.message){
+                                res.status(200).json({message: 'Algo salió mal comunícate con nosotros lo antes posible'});
+                            } 
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            res.status(200).send(err);
+                        });
+                    })
+                    .catch(err => {
+                        console.log(err)
                         res.status(200).send(err);
                     });
             }
@@ -164,35 +195,8 @@ app.group('/clients', (router) => {
             });
         });
         request.end();
-    })
-    /**
-     * eliminar siguiente servicio
-     */
-    .get('/services/alexa/next/delete/:mail', (req,res) => {
-        clientCtrl.getOneMail(req.params.mail)
-        .then( client => {
-            if(client.length === 0){
-                res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
-            }else{
-                servieCtrl.getNextServiceDesc(client[0]._id)
-                    .then( service => {
-                        servieCtrl.deleteOne(service._id)
-                        .then( service => {
-                            res.status(200).json({message: service.message});
-                        })
-                        .catch(err => {
-                            res.status(200).send(err);
-                        });
-                    })
-                    .catch(err => {
-                        res.status(200).send(err);
-                    });
-            }
-        })
-        .catch(err => {
-			res.status(200).send(err);
-		});  
     });
+    
 });
 
 export default app;
