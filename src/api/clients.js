@@ -143,19 +143,9 @@ app.group('/clients', (router) => {
 
 
     .get('/test', (req,res) => {
-        var options = {
-            host: 'https://teadsdf.herokuapp.com/',
-            path: '/api/v1/clients/services/',
-            method: 'POST',
-            headers: {'Content-Type' : 'application/json'},
-            body: {
-                When :'Mañana',
-                Schedule :"03-30-2019",
-                Mail: 'juanc.olivierj@gmail.com'
-            }
-        };
+        var url = 'https://teadsdf.herokuapp.com/api/v1/clients/services/alexa/next' + Mail;
 
-        const request = https.request(options, (response) => {
+        const request = https.get(options, (response) => {
             response.setEncoding('utf8');
             let returnData = '';
             response.on('data', (chunk) => {
@@ -165,7 +155,6 @@ app.group('/clients', (router) => {
             response.on('end', () => {
               console.log(returnData);
               res.status(200).json(returnData);
-            // resolve(JSON.parse(returnData));
             });
     
             response.on('error', (error) => {
