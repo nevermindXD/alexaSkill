@@ -43,6 +43,7 @@ export const addOne = (service) => {
                         return service;
                     })
                     .catch(err => {
+                        console.log(err);
                         let response = {
                             message: 'Ups!, algo salio mal, vuelve a intentrlo',
                             error: err.message
@@ -50,6 +51,7 @@ export const addOne = (service) => {
                         return response;
                     });
                 }else{
+                    console.log(err);
                     let response = {
                         message: 'Servicio no disponible para ese dia',
                         error: err.message
