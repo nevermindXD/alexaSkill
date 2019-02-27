@@ -127,24 +127,21 @@ app.group('/clients', (router) => {
             if(client.length === 0){
                 res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
             }else{
-                
                 servieCtrl.getNextServiceDeleteDesc(client[0]._id)
                     .then( service => {
-                        console.log(service);
-                        res.status(200).json({message: 'Tu próximo servicio a sido cancelado'}); 
-                //         servieCtrl.deleteOne(service._id)
-                //         .then( serviceDEl => {
-                //             if(serviceDEl === undefined){
-                //                 res.status(200).json({message: 'Tu próximo servicio a sido cancelado'}); 
-                //             }
-                //             if(serviceDEl.message){
-                //                 res.status(200).json({message: 'Algo salió mal comunícate con nosotros lo antes posible'});
-                //             } 
-                //         })
-                //         .catch(err => {
-                //             console.log(err)
-                //             res.status(200).send(err);
-                //         });
+                        if(service !== undefined){
+                            servieCtrl.deleteOne(service._id)
+                            .then( serviceDEl => {
+                                    res.status(200).json({message: serviceDEl.message}); 
+                                
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                res.status(200).send(err);
+                            });
+                        }else{
+                            res.status(200).json({Message:"No tienes ningún servicio agendado"});
+                        }
                     })
                     .catch(err => {
                         console.log(err)

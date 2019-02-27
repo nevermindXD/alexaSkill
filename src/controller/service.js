@@ -77,34 +77,16 @@ export const addOne = (service) => {
 };
 
 export const deleteOne = (id) => {
-    return Service.findById(id)
-        .then(service => {
-            if (service === null) {
-                let response = {
-                    message: 'No tienes ningún servicio agendado'
-                };
-                return response;
-            } else {
-                service.remove()
-                    .then(() => {
-                        console.log('delete',service)
-                        let response = {
-                            message: 'Tu próximo servicio a sido cancelado'
-                        };
-                        return 'Tu próximo servicio a sido cancelado';
-                    })
-                    .catch( err  => {
-                        console.log(err);
-                        let response = {
-                            message: 'Ups!, algo salio mal, vuelve a intentrlo'
-                        };
-                        return response;
-                    });
-            }
+    return Service.findByIdAndDelete(id)
+        .then(() => {
+            let response = {
+                message: 'Tu próximo servicio a sido cancelado'
+            };
+            return response;
         }).catch( err => {
             console.log(err);
             let response = {
-                message: 'No tienes ningún servicio agendado'
+                message: 'Algo salió mal comunícate con nosotros lo antes posible'
             };
             return response;
         });
