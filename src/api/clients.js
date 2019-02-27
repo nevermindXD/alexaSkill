@@ -130,7 +130,7 @@ app.group('/clients', (router) => {
                 servieCtrl.getNextServiceDeleteDesc(client[0]._id)
                     .then( service => {
                         console.log(service);
-                        if(service !== undefined){
+                        if(service !== 'No tienes ningún servicio próximo agendado'){
                             servieCtrl.deleteOne(service._id)
                             .then( serviceDEl => {
                                     res.status(200).json({message: serviceDEl.message}); 
