@@ -129,6 +129,7 @@ app.group('/clients', (router) => {
             }else{
                 servieCtrl.getNextServiceDeleteDesc(client[0]._id)
                     .then( service => {
+                        console.log(service);
                         if(service !== undefined){
                             servieCtrl.deleteOne(service._id)
                             .then( serviceDEl => {
