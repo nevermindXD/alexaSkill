@@ -127,21 +127,24 @@ app.group('/clients', (router) => {
             if(client.length === 0){
                 res.status(200).json({Message:"Usuario no registrado , habla con nuestro soporte técnico para saber qué está sucediendo"});
             }else{
+                
                 servieCtrl.getNextServiceDeleteDesc(client[0]._id)
                     .then( service => {
-                        servieCtrl.deleteOne(service._id)
-                        .then( serviceDEl => {
-                            if(serviceDEl === undefined){
-                                res.status(200).json({message: 'Tu próximo servicio a sido cancelado'}); 
-                            }
-                            if(serviceDEl.message){
-                                res.status(200).json({message: 'Algo salió mal comunícate con nosotros lo antes posible'});
-                            } 
-                        })
-                        .catch(err => {
-                            console.log(err)
-                            res.status(200).send(err);
-                        });
+                        console.log(service);
+                        res.status(200).json({message: 'Tu próximo servicio a sido cancelado'}); 
+                //         servieCtrl.deleteOne(service._id)
+                //         .then( serviceDEl => {
+                //             if(serviceDEl === undefined){
+                //                 res.status(200).json({message: 'Tu próximo servicio a sido cancelado'}); 
+                //             }
+                //             if(serviceDEl.message){
+                //                 res.status(200).json({message: 'Algo salió mal comunícate con nosotros lo antes posible'});
+                //             } 
+                //         })
+                //         .catch(err => {
+                //             console.log(err)
+                //             res.status(200).send(err);
+                //         });
                     })
                     .catch(err => {
                         console.log(err)
