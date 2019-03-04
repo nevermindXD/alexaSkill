@@ -18,6 +18,9 @@ const ServiceSchema = new Schema ({
         type: Boolean,
         default: false
     },
+    CommentService:{
+        type: String
+    },
 	CreationDate: {
 		type: Date,
 		default: Date.now()

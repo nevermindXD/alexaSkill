@@ -33,10 +33,19 @@ const ClientSchema = new Schema ({
     Phone:{
         type: String
     },
+    Mobile:{
+        type: String
+    },
     Service:[{
 		type: Schema.Types.ObjectId,
 		ref: 'Service'
     }],
+    Comment:{
+        type: String
+    },
+    Suscription:{
+        type: Boolean
+    },
 	CreationDate: {
 		type: Date,
 		default: Date.now()
